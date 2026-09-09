@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#8b5cf6">
-<title>Fit Calendar Premium 10.1</title>
+<title>Fit Calendar Premium 10.3</title>
 <style>
 :root{--p:#d92f9d;--p2:#7652f5;--ink:#272333;--muted:#777181;--bg:#faf6ff;--card:#fff;--soft:#f5effa;--line:#eadff0;--ok:#25a269;--danger:#d94b64;--shadow:0 12px 35px rgba(68,35,100,.09)}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#fff 0,#faf4ff 45%,#f8f4ff 100%);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
@@ -19,6 +19,7 @@ input,select,textarea{width:100%;padding:14px 15px;border:1px solid #e2d7e8;bord
 .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.day{min-height:72px;border:1px solid var(--line);border-radius:12px;padding:7px;background:#fff}.day b{font-size:12px}.day.today{outline:2px solid #9d58ef}.dot{display:block;margin-top:9px;font-size:10px;color:#fff;background:#9b55ed;border-radius:7px;padding:4px;overflow:hidden;white-space:nowrap}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#272333;color:#fff;padding:12px 17px;border-radius:14px;display:none;z-index:50}.toast.show{display:block}
 .clientbar{background:#f7f0fb;border-radius:17px;padding:12px;margin:12px 0}.check{display:flex;gap:9px;align-items:center;margin:8px 0}.check input{width:auto;margin:0}
+.exercise-box{padding:15px;border:1px solid var(--line);border-radius:18px;margin:10px 0;background:#fcf9ff}.exercise-box .grid2{margin-top:9px}.exercise-box a{font-size:13px;font-weight:800;color:#8750d8;text-decoration:none}.exercise-box .exercise-title{font-size:16px}.exercise-details{padding:10px 12px;background:#faf6ff;border-radius:13px;margin-top:9px}
 .empty{text-align:center;padding:25px;color:var(--muted)}
 @media(max-width:520px){.hero h1{font-size:34px}.nav button{font-size:12px}.grid2{grid-template-columns:1fr}.day{min-height:64px}.app{padding-left:12px;padding-right:12px}}
 </style>
@@ -62,10 +63,7 @@ function initCloud(){
  catch(e){console.error(e);setCloudStatus("Ошибка подключения Supabase");return false}
 }
 function withTimeout(promise,ms=8000){
- return Promise.race([
-  promise,
-  new Promise((_,reject)=>setTimeout(()=>reject(new Error("Supabase timeout")),ms))
- ])
+ return Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(new Error("Supabase timeout")),ms))])
 }
 async function loadCloud(){
  if(!cloud)return false;
@@ -73,30 +71,24 @@ async function loadCloud(){
  cloudBusy=true;
  setCloudStatus("Подключаемся к облаку…");
  try{
-  const result=await withTimeout(
-   cloud.from(DATA_TABLE).select("id,data,updated_at").eq("id","main").maybeSingle(),
-   8000
-  );
+  const result=await withTimeout(cloud.from(DATA_TABLE).select("id,data,updated_at").eq("id","main").maybeSingle(),8000);
   const {data,error}=result;
   if(error)throw error;
   if(data?.data){
    db={...JSON.parse(JSON.stringify(seed)),...data.data};
    localSave();
   }else{
-   const {error:e}=await withTimeout(
-    cloud.from(DATA_TABLE).upsert(
-     {id:"main",data:db,updated_at:new Date().toISOString()},{onConflict:"id"}),
-    8000
-   );
+   const {error:e}=await withTimeout(cloud.from(DATA_TABLE).upsert(
+    {id:"main",data:db,updated_at:new Date().toISOString()},{onConflict:"id"}),8000);
    if(e)throw e;
   }
   cloudReady=true;setCloudStatus("Данные синхронизированы",true);return true;
  }catch(e){
   console.error("Supabase:",e);cloudReady=false;
   const msg=String(e?.message||e||"");
-  if(msg.toLowerCase().includes("timeout")) setCloudStatus("Supabase не ответил за 8 секунд");
-  else if(msg.toLowerCase().includes("row-level")||msg.toLowerCase().includes("permission")||msg.includes("42501")) setCloudStatus("Supabase: нет прав RLS");
-  else if(msg) setCloudStatus("Ошибка Supabase: "+msg.slice(0,90));
+  if(msg.toLowerCase().includes("timeout"))setCloudStatus("Supabase не ответил за 8 секунд");
+  else if(msg.toLowerCase().includes("row-level")||msg.toLowerCase().includes("permission")||msg.includes("42501"))setCloudStatus("Supabase: нет прав RLS");
+  else if(msg)setCloudStatus("Ошибка Supabase: "+msg.slice(0,90));
   else setCloudStatus("Облако недоступно — проверь ключ и Data API");
   return false;
  }finally{cloudBusy=false}
@@ -110,9 +102,7 @@ async function saveCloud(){
   cloudReady=true;setCloudStatus("Сохранено в облако",true);
  }catch(e){console.error("Supabase save:",e);setCloudStatus("Сохранено локально; облако недоступно")}
 }
-function save(){
- localSave();clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveCloud(),300);
-}
+function save(){localSave();clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveCloud(),300)}
 
 function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
@@ -126,11 +116,11 @@ function stats(){
  return {clients:db.clients.length,workouts:db.workouts.length,done,ex:db.exercises.length};
 }
 function render(){
- const s=stats(), tab=window.tab||"home";
+ const s=stats(),tab=window.tab||"home";
  document.getElementById("root").innerHTML=`
  <main class="app">
   <section class="hero">
-   <div class="eyebrow">PREMIUM TRAINER APP · 10.2</div>
+   <div class="eyebrow">PREMIUM TRAINER APP · 10.3</div>
    <h1>Fit Calendar</h1>
    <p>Тренировки · клиенты · библиотека · прогресс</p>
    <div class="stats">
@@ -161,7 +151,7 @@ function home(){
  <section class="panel"><div class="kicker">БЫСТРЫЙ ДОСТУП</div>${db.clients.length?db.clients.slice(0,3).map(c=>clientCard(c)).join(""):`<div class="empty">Добавь первого клиента — здесь появится его прогресс.</div>`}</section>`;
 }
 function clientCard(c){
- const ws=db.workouts.filter(w=>w.clientId===c.id), done=ws.filter(w=>w.done).length;
+ const ws=db.workouts.filter(w=>w.clientId===c.id),done=ws.filter(w=>w.done).length;
  return `<div class="item"><div class="row"><div><b>${esc(c.name)}</b><div class="muted">${esc(c.goal||"Цель не указана")}</div></div><span class="tag">${ws.length?Math.round(done/ws.length*100):0}%</span></div><button class="secondary" onclick="viewClient('${c.id}')">Открыть клиента</button></div>`
 }
 function library(){
@@ -174,22 +164,49 @@ function clients(){
  ${db.clients.map(clientCard).join("")||`<div class="empty">Клиентов пока нет.</div>`}</section>`;
 }
 function viewClient(cid){db.selectedClient=cid;save();openModal(clientDetail(db.clients.find(c=>c.id===cid)))}
+
+function workoutExercisesView(w){
+ if(!Array.isArray(w.exercises)||!w.exercises.length)return "";
+ return `<div style="margin-top:12px"><b>Упражнения</b>${w.exercises.map(x=>{
+  const e=db.exercises.find(e=>e.id===x.exerciseId)||{};
+  const parts=[
+   x.sets?`${x.sets} подхода`:"",
+   x.reps?`${x.reps} повт.`:"",
+   x.weight?`${x.weight} кг`:"",
+   x.rest?`${x.rest} сек отдых`:""
+  ].filter(Boolean).join(" · ");
+  return `<div class="exercise-details">
+   <div class="row"><b>${esc(e.name||"Упражнение")}</b>${e.muscle?`<span class="tag">${esc(e.muscle)}</span>`:""}</div>
+   ${parts?`<div class="muted" style="margin-top:4px">${esc(parts)}</div>`:""}
+   ${e.video?`<div style="margin-top:6px"><a href="${esc(e.video)}" target="_blank">🎥 Открыть видео</a></div>`:""}
+   ${x.note?`<div class="muted" style="margin-top:6px">📝 ${esc(x.note)}</div>`:""}
+  </div>`;
+ }).join("")}</div>`;
+}
+
 function clientDetail(c){
- const ws=db.workouts.filter(w=>w.clientId===c.id), done=ws.filter(w=>w.done).length;
+ const ws=db.workouts.filter(w=>w.clientId===c.id),done=ws.filter(w=>w.done).length;
  return `<div class="row"><h2>${esc(c.name)}</h2><button class="small" onclick="closeModal()">✕</button></div>
  <div class="clientbar"><b>Цель:</b> ${esc(c.goal||"—")}<br><span class="muted">Прогресс: ${ws.length?Math.round(done/ws.length*100):0}% · ${done}/${ws.length} тренировок</span></div>
  <button class="primary" onclick="assignWorkout('${c.id}')">＋ Назначить тренировку</button>
- <h3>История</h3>${ws.slice().reverse().map(w=>`<div class="item"><div class="row"><b>${esc(w.title)}</b><span class="tag">${w.done?"Выполнено":"Назначено"}</span></div><div class="muted">${esc(w.date)}${w.notes?" · "+esc(w.notes):""}</div></div>`).join("")||`<div class="empty">Тренировок ещё нет.</div>`}
+ <h3>История</h3>${ws.slice().reverse().map(w=>`<div class="item">
+  <div class="row"><b>${esc(w.title)}</b><span class="tag">${w.done?"Выполнено":"Назначено"}</span></div>
+  <div class="muted">${esc(w.date)}${w.notes?" · "+esc(w.notes):""}</div>
+  ${workoutExercisesView(w)}
+ </div>`).join("")||`<div class="empty">Тренировок ещё нет.</div>`}
  <button class="secondary danger" onclick="deleteClient('${c.id}')">Удалить клиента</button>`;
 }
 function addClient(){
  openModal(`<h2>Новый клиент</h2><label>Имя</label><input id="cn" placeholder="Имя клиента"><label>Цель</label><input id="cg" placeholder="Например: ягодицы, сила, снижение веса"><button class="primary" onclick="saveClient()">Создать клиента</button><button class="secondary" onclick="closeModal()">Отмена</button>`);
 }
 function saveClient(){
- const name=document.getElementById("cn").value.trim(); if(!name)return toast("Укажи имя клиента");
+ const name=document.getElementById("cn").value.trim();if(!name)return toast("Укажи имя клиента");
  db.clients.push({id:id(),name,goal:document.getElementById("cg").value.trim(),created:new Date().toISOString()});save();closeModal();render();toast("Клиент добавлен");
 }
-function deleteClient(cid){if(!confirm("Удалить клиента и его историю?"))return;db.clients=db.clients.filter(c=>c.id!==cid);db.workouts=db.workouts.filter(w=>w.clientId!==cid);save();closeModal();render()}
+function deleteClient(cid){
+ if(!confirm("Удалить клиента и его историю?"))return;
+ db.clients=db.clients.filter(c=>c.id!==cid);db.workouts=db.workouts.filter(w=>w.clientId!==cid);save();closeModal();render()
+}
 function addExercise(){
  openModal(`<h2>Новое упражнение</h2><label>Название</label><input id="en" placeholder="Например: Выпады"><label>Мышечная группа</label><input id="em" placeholder="Ноги / ягодицы / спина..."><label>Ссылка на видео</label><input id="ev" type="url" placeholder="https://instagram.com/..."><button class="primary" onclick="saveExercise()">Сохранить в библиотеку</button><button class="secondary" onclick="closeModal()">Отмена</button>`);
 }
@@ -201,24 +218,70 @@ function editExercise(eid){
  const e=db.exercises.find(x=>x.id===eid);
  openModal(`<h2>Изменить упражнение</h2><label>Название</label><input id="en" value="${esc(e.name)}"><label>Мышечная группа</label><input id="em" value="${esc(e.muscle)}"><label>Ссылка на видео</label><input id="ev" value="${esc(e.video)}"><button class="primary" onclick="updateExercise('${eid}')">Сохранить</button><button class="secondary danger" onclick="removeExercise('${eid}')">Удалить</button>`);
 }
-function updateExercise(eid){let e=db.exercises.find(x=>x.id===eid);e.name=document.getElementById("en").value.trim();e.muscle=document.getElementById("em").value.trim();e.video=document.getElementById("ev").value.trim();save();closeModal();render();toast("Изменения сохранены")}
+function updateExercise(eid){
+ let e=db.exercises.find(x=>x.id===eid);e.name=document.getElementById("en").value.trim();e.muscle=document.getElementById("em").value.trim();e.video=document.getElementById("ev").value.trim();save();closeModal();render();toast("Изменения сохранены")
+}
 function removeExercise(eid){db.exercises=db.exercises.filter(e=>e.id!==eid);save();closeModal();render();toast("Упражнение удалено")}
+
 function assignWorkout(cid){
  if(!db.exercises.length)return toast("Сначала добавь упражнения");
- openModal(`<h2>Новая тренировка</h2><label>Название</label><input id="wn" placeholder="Ноги + ягодицы"><label>Дата</label><input id="wd" type="date" value="${new Date().toISOString().slice(0,10)}"><label>Упражнения</label><div id="checks">${db.exercises.map(e=>`<label class="check"><input type="checkbox" value="${e.id}"> ${esc(e.name)}</label>`).join("")}</div><label>Заметка</label><textarea id="wnote" placeholder="Комментарий тренера"></textarea><button class="primary" onclick="saveWorkout('${cid}')">Назначить клиенту</button>`);
+ openModal(`<h2>Новая тренировка</h2>
+ <label>Название</label><input id="wn" placeholder="Ноги + ягодицы">
+ <label>Дата</label><input id="wd" type="date" value="${new Date().toISOString().slice(0,10)}">
+ <label>Упражнения</label>
+ <div id="checks">
+ ${db.exercises.map(e=>`<div class="exercise-box" data-eid="${e.id}">
+  <label class="check"><input type="checkbox" class="we-check"> <span class="exercise-title"><b>${esc(e.name)}</b></span></label>
+  ${e.muscle?`<div class="muted">${esc(e.muscle)}</div>`:""}
+  ${e.video?`<div style="margin-top:6px"><a href="${esc(e.video)}" target="_blank">🎥 Открыть видео из библиотеки</a></div>`:""}
+  <div class="grid2">
+   <div><label>Подходы</label><input class="we-sets" type="number" min="0" placeholder="4"></div>
+   <div><label>Повторы</label><input class="we-reps" type="number" min="0" placeholder="10"></div>
+   <div><label>Вес, кг</label><input class="we-weight" type="number" min="0" step="0.5" placeholder="50"></div>
+   <div><label>Отдых, сек</label><input class="we-rest" type="number" min="0" placeholder="90"></div>
+  </div>
+  <label>Заметка к упражнению</label>
+  <input class="we-note" placeholder="Контроль техники, медленный темп...">
+ </div>`).join("")}
+ </div>
+ <label>Общая заметка тренера</label><textarea id="wnote" placeholder="Комментарий тренера"></textarea>
+ <button class="primary" onclick="saveWorkout('${cid}')">Назначить клиенту</button>
+ <button class="secondary" onclick="closeModal()">Отмена</button>`);
 }
+
 function saveWorkout(cid){
  const title=document.getElementById("wn").value.trim()||"Тренировка";
- const ex=[...document.querySelectorAll("#checks input:checked")].map(x=>x.value);
- db.workouts.push({id:id(),clientId:cid,title,date:document.getElementById("wd").value,exerciseIds:ex,notes:document.getElementById("wnote").value.trim(),done:false});
+ const rows=[...document.querySelectorAll("#checks .exercise-box")].filter(r=>r.querySelector(".we-check").checked);
+ if(!rows.length)return toast("Выбери хотя бы одно упражнение");
+ const exercises=rows.map(r=>({
+  exerciseId:r.dataset.eid,
+  sets:Number(r.querySelector(".we-sets").value)||0,
+  reps:Number(r.querySelector(".we-reps").value)||0,
+  weight:Number(r.querySelector(".we-weight").value)||0,
+  rest:Number(r.querySelector(".we-rest").value)||0,
+  note:r.querySelector(".we-note").value.trim()
+ }));
+ db.workouts.push({
+  id:id(),clientId:cid,title,
+  date:document.getElementById("wd").value,
+  exerciseIds:exercises.map(x=>x.exerciseId),
+  exercises,
+  notes:document.getElementById("wnote").value.trim(),
+  done:false
+ });
  save();closeModal();render();toast("Тренировка назначена");
 }
+
 function calendar(){
- const now=new Date(), y=now.getFullYear(), m=now.getMonth(), first=new Date(y,m,1), days=new Date(y,m+1,0).getDate(), offset=(first.getDay()+6)%7;
+ const now=new Date(),y=now.getFullYear(),m=now.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),offset=(first.getDay()+6)%7;
  let cells=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].map(x=>`<div class="muted" style="font-size:11px;font-weight:800;text-align:center">${x}</div>`).join("");
  for(let i=0;i<offset;i++)cells+="<div></div>";
- for(let d=1;d<=days;d++){let ds=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`, ws=db.workouts.filter(w=>w.date===ds);cells+=`<div class="day ${d===now.getDate()?"today":""}"><b>${d}</b>${ws.slice(0,2).map(w=>`<span class="dot">${esc((db.clients.find(c=>c.id===w.clientId)||{}).name||"Клиент")}</span>`).join("")}</div>`}
- return `<section class="panel"><div class="kicker">РАСПИСАНИЕ</div><h2>${now.toLocaleString("ru-RU",{month:"long",year:"numeric"})}</h2><div class="calendar">${cells}</div></section><section class="panel"><h2>Ближайшие тренировки</h2>${db.workouts.filter(w=>w.date>=new Date().toISOString().slice(0,10)).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,10).map(w=>`<div class="item"><div class="row"><b>${esc(w.title)}</b><span class="tag">${esc(w.date)}</span></div><div class="muted">${esc((db.clients.find(c=>c.id===w.clientId)||{}).name||"Клиент")}</div></div>`).join("")||`<div class="empty">Запланированных тренировок нет.</div>`}</section>`;
+ for(let d=1;d<=days;d++){
+  let ds=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`,ws=db.workouts.filter(w=>w.date===ds);
+  cells+=`<div class="day ${d===now.getDate()?"today":""}"><b>${d}</b>${ws.slice(0,2).map(w=>`<span class="dot">${esc((db.clients.find(c=>c.id===w.clientId)||{}).name||"Клиент")}</span>`).join("")}</div>`
+ }
+ return `<section class="panel"><div class="kicker">РАСПИСАНИЕ</div><h2>${now.toLocaleString("ru-RU",{month:"long",year:"numeric"})}</h2><div class="calendar">${cells}</div></section>
+ <section class="panel"><h2>Ближайшие тренировки</h2>${db.workouts.filter(w=>w.date>=new Date().toISOString().slice(0,10)).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,10).map(w=>`<div class="item"><div class="row"><b>${esc(w.title)}</b><span class="tag">${esc(w.date)}</span></div><div class="muted">${esc((db.clients.find(c=>c.id===w.clientId)||{}).name||"Клиент")}</div></div>`).join("")||`<div class="empty">Запланированных тренировок нет.</div>`}</section>`;
 }
 function trainer(){
  return `<section class="panel"><div class="kicker">НАСТРОЙКИ ТРЕНЕРА</div><h2>Мой профиль</h2><label>Имя тренера</label><input id="tn" value="${esc(db.trainer.name)}"><label>Instagram тренера</label><input id="ti" type="url" placeholder="https://instagram.com/..." value="${esc(db.trainer.instagram||"https://www.instagram.com/fitness_batumi?stkn=MXRhdnlqamltcWd4OQ==")}"><button class="primary" onclick="saveTrainer()">Сохранить</button></section>
@@ -229,7 +292,7 @@ async function connectSupabase(){
  const key=(document.getElementById("sbkey")?.value||"").trim();
  if(!key)return toast("Вставь anon/publishable key");
  localStorage.setItem("fit-calendar-supabase-key",key);
- windSUPABASE_ANON_KEY=key;
+ SUPABASE_ANON_KEY=key;
  cloud=null;cloudReady=false;
  render();
  if(!initCloud())return;
@@ -243,15 +306,17 @@ async function cloudSyncNow(){
 }
 function saveTrainer(){db.trainer.name=document.getElementById("tn").value.trim()||"Мой тренер";db.trainer.instagram=document.getElementById("ti").value.trim();save();render();toast("Профиль сохранён")}
 function exportData(){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:"application/json"}));a.download="fit-calendar-backup.json";a.click()}
-function importData(){const i=document.createElement("input");i.type="file";i.accept=".json";i.onchange=()=>{const r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save();render();toast("Данные импортированы")}catch{toast("Неверный файл")}};r.readAsText(i.files[0])};i.click()}
-async function resetData(){if(!confirm("Удалить все данные приложения?"))return;db=JSON.parse(JSON.stringify(seed));save();await saveCloud();render();toast("Данные сброшены")}
+function importData(){
+ const i=document.createElement("input");i.type="file";i.accept=".json";
+ i.onchange=()=>{const r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save();render();toast("Данные импортированы")}catch{toast("Неверный файл")}};r.readAsText(i.files[0])};
+ i.click()
+}
+async function resetData(){
+ if(!confirm("Удалить все данные приложения?"))return;
+ db=JSON.parse(JSON.stringify(seed));save();await saveCloud();render();toast("Данные сброшены")
+}
 render();
-(async()=>{
- if(initCloud()){
-  await loadCloud();
-  render();
- }
-})();
+(async()=>{if(initCloud()){await loadCloud();render()}})();
 </script>
 </body>
 </html>
