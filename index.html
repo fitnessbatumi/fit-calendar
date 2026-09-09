@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#8b5cf6">
+<title>Fit Calendar Premium 10.1</title>
+<style>
+:root{--p:#d92f9d;--p2:#7652f5;--ink:#272333;--muted:#777181;--bg:#faf6ff;--card:#fff;--soft:#f5effa;--line:#eadff0;--ok:#25a269;--danger:#d94b64;--shadow:0 12px 35px rgba(68,35,100,.09)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#fff 0,#faf4ff 45%,#f8f4ff 100%);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
+button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.app{max-width:760px;margin:auto;padding:18px 16px 42px}
+.hero{border-radius:32px;padding:27px 24px;color:white;background:linear-gradient(135deg,#e329a2,#9a4ff0 55%,#5b4df2);box-shadow:0 18px 45px rgba(143,59,224,.22)}
+.eyebrow{font-size:13px;letter-spacing:3px;font-weight:800;opacity:.9}.hero h1{font-size:40px;margin:8px 0 6px}.hero p{font-size:18px;margin:0 0 22px;opacity:.92}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{border:1px solid rgba(255,255,255,.38);border-radius:20px;padding:13px 6px;text-align:center;background:rgba(255,255,255,.10)}.stat b{font-size:25px;display:block}.stat span{font-size:11px;font-weight:800;opacity:.9}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:18px 0}.nav button{padding:13px 5px;border-radius:19px;background:white;color:#655d6d;box-shadow:0 5px 18px rgba(70,40,100,.06);font-weight:800}.nav button.active{color:white;background:linear-gradient(135deg,var(--p),var(--p2))}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:27px;padding:22px;margin:14px 0;box-shadow:var(--shadow)}.kicker{color:#ba3788;letter-spacing:3px;font-size:12px;font-weight:900}.panel h2{font-size:27px;margin:7px 0}.muted{color:var(--muted);line-height:1.55}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.primary{width:100%;padding:15px;border-radius:17px;color:#fff;font-weight:900;background:linear-gradient(90deg,#e834a1,#8d4ff1);margin-top:12px}.secondary{width:100%;padding:14px;border-radius:16px;background:var(--soft);color:#51485b;font-weight:850;margin-top:9px}.small{padding:9px 12px;border-radius:12px;background:var(--soft);font-weight:800}.danger{color:var(--danger)}
+.item{padding:15px;border:1px solid var(--line);border-radius:18px;margin:9px 0;background:#fff}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.tag{display:inline-block;padding:5px 9px;border-radius:10px;background:#f4eafb;color:#8c4d9f;font-size:12px;font-weight:800}
+input,select,textarea{width:100%;padding:14px 15px;border:1px solid #e2d7e8;border-radius:15px;background:#fff;outline:none;color:var(--ink);margin:5px 0 11px}textarea{min-height:90px;resize:vertical}label{font-size:13px;font-weight:800;color:#665e6d}.modal{position:fixed;inset:0;background:rgba(35,24,45,.48);display:none;align-items:flex-end;justify-content:center;z-index:20}.modal.open{display:flex}.sheet{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:28px 28px 0 0;padding:23px 18px 32px}.sheet h2{margin-top:0}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.day{min-height:72px;border:1px solid var(--line);border-radius:12px;padding:7px;background:#fff}.day b{font-size:12px}.day.today{outline:2px solid #9d58ef}.dot{display:block;margin-top:9px;font-size:10px;color:#fff;background:#9b55ed;border-radius:7px;padding:4px;overflow:hidden;white-space:nowrap}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#272333;color:#fff;padding:12px 17px;border-radius:14px;display:none;z-index:50}.toast.show{display:block}
+.clientbar{background:#f7f0fb;border-radius:17px;padding:12px;margin:12px 0}.check{display:flex;gap:9px;align-items:center;margin:8px 0}.check input{width:auto;margin:0}
+.empty{text-align:center;padding:25px;color:var(--muted)}
+@media(max-width:520px){.hero h1{font-size:34px}.nav button{font-size:12px}.grid2{grid-template-columns:1fr}.day{min-height:64px}.app{padding-left:12px;padding-right:12px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="modal" class="modal"><div class="sheet" id="sheet"></div></div>
+<div id="toast" class="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://dnbpqlnqmyvnukhwcdhv.supabase.co";
+let SUPABASE_ANON_KEY=localStorage.getItem("fit-calendar-supabase-key")||"";
+const DATA_TABLE="fit_calendar_data";
+const KEY="fit-calendar-premium-10";
+const seed={
+ mode:"trainer", selectedClient:null,
+ trainer:{name:"Мой тренер",instagram:"https://www.instagram.com/fitness_batumi?stkn=MXRhdnlqamltcWd4OQ=="},
+ clients:[],
+ exercises:[
+  {id:"e1",name:"Присед со штангой",muscle:"Ноги",video:""},
+  {id:"e2",name:"Ягодичный мост",muscle:"Ягодицы",video:""},
+  {id:"e3",name:"Румынская тяга",muscle:"Задняя поверхность бедра",video:""},
+  {id:"e4",name:"Жим гантелей",muscle:"Грудь",video:""}
+ ],
+ programs:[], workouts:[]
+};
+let db=JSON.parse(localStorage.getItem(KEY)||"null")||JSON.parse(JSON.stringify(seed));
+let cloud=null, cloudReady=false, saveTimer=null, cloudBusy=false;
+
+function localSave(){localStorage.setItem(KEY,JSON.stringify(db))}
+function setCloudStatus(text,ok=false){
+ const el=document.getElementById("cloudStatus");
+ if(el){el.textContent=(ok?"☁️ ":"⚠️ ")+text;el.style.color=ok?"#25a269":"#b7791f";}
+}
+function initCloud(){
+ if(!SUPABASE_ANON_KEY){setCloudStatus("Supabase: нужен anon key");return false}
+ if(!window.supabase || typeof window.supabase.createClient!=="function"){
+  setCloudStatus("Не загрузилась библиотека Supabase");return false
+ }
+ try{cloud=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);return true}
+ catch(e){console.error(e);setCloudStatus("Ошибка подключения Supabase");return false}
+}
+function withTimeout(promise,ms=8000){
+ return Promise.race([
+  promise,
+  new Promise((_,reject)=>setTimeout(()=>reject(new Error("Supabase timeout")),ms))
+ ])
+}
+async function loadCloud(){
+ if(!cloud)return false;
+ if(cloudBusy)return false;
+ cloudBusy=true;
+ setCloudStatus("Подключаемся к облаку…");
+ try{
+  const result=await withTimeout(
+   cloud.from(DATA_TABLE).select("id,data,updated_at").eq("id","main").maybeSingle(),
+   8000
+  );
+  const {data,error}=result;
+  if(error)throw error;
+  if(data?.data){
+   db={...JSON.parse(JSON.stringify(seed)),...data.data};
+   localSave();
+  }else{
+   const {error:e}=await withTimeout(
+    cloud.from(DATA_TABLE).upsert(
+     {id:"main",data:db,updated_at:new Date().toISOString()},{onConflict:"id"}),
+    8000
+   );
+   if(e)throw e;
+  }
+  cloudReady=true;setCloudStatus("Данные синхронизированы",true);return true;
+ }catch(e){
+  console.error("Supabase:",e);cloudReady=false;
+  const msg=String(e?.message||e||"");
+  if(msg.toLowerCase().includes("timeout")) setCloudStatus("Supabase не ответил за 8 секунд");
+  else if(msg.toLowerCase().includes("row-level")||msg.toLowerCase().includes("permission")||msg.includes("42501")) setCloudStatus("Supabase: нет прав RLS");
+  else if(msg) setCloudStatus("Ошибка Supabase: "+msg.slice(0,90));
+  else setCloudStatus("Облако недоступно — проверь ключ и Data API");
+  return false;
+ }finally{cloudBusy=false}
+}
+async function saveCloud(){
+ localSave();if(!cloud)return;
+ try{
+  const {error}=await withTimeout(cloud.from(DATA_TABLE).upsert(
+   {id:"main",data:db,updated_at:new Date().toISOString()},{onConflict:"id"}),8000);
+  if(error)throw error;
+  cloudReady=true;setCloudStatus("Сохранено в облако",true);
+ }catch(e){console.error("Supabase save:",e);setCloudStatus("Сохранено локально; облако недоступно")}
+}
+function save(){
+ localSave();clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveCloud(),300);
+}
+
+function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function toast(t){const x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1900)}
+function openModal(content){document.getElementById("sheet").innerHTML=content;document.getElementById("modal").classList.add("open")}
+function closeModal(){document.getElementById("modal").classList.remove("open")}
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()})
+
+function stats(){
+ const done=db.workouts.filter(x=>x.done).length;
+ return {clients:db.clients.length,workouts:db.workouts.length,done,ex:db.exercises.length};
+}
+function render(){
+ const s=stats(), tab=window.tab||"home";
+ document.getElementById("root").innerHTML=`
+ <main class="app">
+  <section class="hero">
+   <div class="eyebrow">PREMIUM TRAINER APP · 10.2</div>
+   <h1>Fit Calendar</h1>
+   <p>Тренировки · клиенты · библиотека · прогресс</p>
+   <div class="stats">
+    <div class="stat"><b>${s.clients}</b><span>КЛИЕНТОВ</span></div>
+    <div class="stat"><b>${s.workouts}</b><span>ТРЕНИРОВОК</span></div>
+    <div class="stat"><b>${s.workouts?Math.round(s.done/s.workouts*100):0}%</b><span>ВЫПОЛНЕНО</span></div>
+   </div>
+  </section>
+  <nav class="nav">
+   ${["home","calendar","library","clients","trainer"].map((x,i)=>`<button class="${tab===x?"active":""}" onclick="go('${x}')">${["🏠 Главная","📅 Календарь","📚 Библиотека","👥 Клиенты","🧑‍🏫 Тренер"][i]}</button>`).join("")}
+  </nav>
+  <div id="content">${content(tab)}</div>
+  <div style="text-align:center;color:#938a9b;font-size:12px;margin-top:22px"><span id="cloudStatus">☁️ Проверяем облако…</span></div>
+ </main>`;
+}
+function go(t){window.tab=t;render()}
+function content(t){
+ if(t==="home")return home();
+ if(t==="library")return library();
+ if(t==="clients")return clients();
+ if(t==="calendar")return calendar();
+ return trainer();
+}
+function home(){
+ return `<section class="panel"><div class="kicker">ПАНЕЛЬ ТРЕНЕРА</div><h2>Всё под рукой ✨</h2><p class="muted">Создай упражнение один раз, собери программу и назначь её клиенту. Результаты будут собираться в одном месте.</p>
+ <button class="primary" onclick="addClient()">＋ Новый клиент</button><button class="secondary" onclick="addExercise()">＋ Добавить упражнение</button></section>
+ <section class="panel"><div class="grid2"><div class="item"><b>${db.exercises.length}</b><br><span class="muted">УПРАЖНЕНИЙ</span></div><div class="item"><b>${db.clients.length}</b><br><span class="muted">КЛИЕНТОВ</span></div><div class="item"><b>${db.programs.length}</b><br><span class="muted">ПРОГРАММ</span></div><div class="item"><b>${db.workouts.filter(x=>x.done).length}</b><br><span class="muted">ВЫПОЛНЕНО</span></div></div></section>
+ <section class="panel"><div class="kicker">БЫСТРЫЙ ДОСТУП</div>${db.clients.length?db.clients.slice(0,3).map(c=>clientCard(c)).join(""):`<div class="empty">Добавь первого клиента — здесь появится его прогресс.</div>`}</section>`;
+}
+function clientCard(c){
+ const ws=db.workouts.filter(w=>w.clientId===c.id), done=ws.filter(w=>w.done).length;
+ return `<div class="item"><div class="row"><div><b>${esc(c.name)}</b><div class="muted">${esc(c.goal||"Цель не указана")}</div></div><span class="tag">${ws.length?Math.round(done/ws.length*100):0}%</span></div><button class="secondary" onclick="viewClient('${c.id}')">Открыть клиента</button></div>`
+}
+function library(){
+ return `<section class="panel"><div class="row"><div><div class="kicker">ЕДИНАЯ БИБЛИОТЕКА</div><h2>Упражнения</h2></div><button class="small" onclick="addExercise()">＋ Добавить</button></div>
+ <p class="muted">Создаёшь упражнение один раз — потом используешь его в любых программах. Видео можно хранить ссылкой Instagram/другого сервиса.</p>
+ ${db.exercises.map(e=>`<div class="item"><div class="row"><div><b>${esc(e.name)}</b><div class="muted">${esc(e.muscle)}</div></div><button class="small" onclick="editExercise('${e.id}')">Изменить</button></div>${e.video?`<div style="margin-top:8px"><a href="${esc(e.video)}" target="_blank">🎥 Открыть видео</a></div>`:"<div class='muted' style='margin-top:7px'>Видео пока не добавлено</div>"}</div>`).join("")||`<div class="empty">Библиотека пока пустая.</div>`}</section>`;
+}
+function clients(){
+ return `<section class="panel"><div class="row"><div><div class="kicker">БАЗА КЛИЕНТОВ</div><h2>Мои клиенты</h2></div><button class="small" onclick="addClient()">＋ Клиент</button></div>
+ ${db.clients.map(clientCard).join("")||`<div class="empty">Клиентов пока нет.</div>`}</section>`;
+}
+function viewClient(cid){db.selectedClient=cid;save();openModal(clientDetail(db.clients.find(c=>c.id===cid)))}
+function clientDetail(c){
+ const ws=db.workouts.filter(w=>w.clientId===c.id), done=ws.filter(w=>w.done).length;
+ return `<div class="row"><h2>${esc(c.name)}</h2><button class="small" onclick="closeModal()">✕</button></div>
+ <div class="clientbar"><b>Цель:</b> ${esc(c.goal||"—")}<br><span class="muted">Прогресс: ${ws.length?Math.round(done/ws.length*100):0}% · ${done}/${ws.length} тренировок</span></div>
+ <button class="primary" onclick="assignWorkout('${c.id}')">＋ Назначить тренировку</button>
+ <h3>История</h3>${ws.slice().reverse().map(w=>`<div class="item"><div class="row"><b>${esc(w.title)}</b><span class="tag">${w.done?"Выполнено":"Назначено"}</span></div><div class="muted">${esc(w.date)}${w.notes?" · "+esc(w.notes):""}</div></div>`).join("")||`<div class="empty">Тренировок ещё нет.</div>`}
+ <button class="secondary danger" onclick="deleteClient('${c.id}')">Удалить клиента</button>`;
+}
+function addClient(){
+ openModal(`<h2>Новый клиент</h2><label>Имя</label><input id="cn" placeholder="Имя клиента"><label>Цель</label><input id="cg" placeholder="Например: ягодицы, сила, снижение веса"><button class="primary" onclick="saveClient()">Создать клиента</button><button class="secondary" onclick="closeModal()">Отмена</button>`);
+}
+function saveClient(){
+ const name=document.getElementById("cn").value.trim(); if(!name)return toast("Укажи имя клиента");
+ db.clients.push({id:id(),name,goal:document.getElementById("cg").value.trim(),created:new Date().toISOString()});save();closeModal();render();toast("Клиент добавлен");
+}
+function deleteClient(cid){if(!confirm("Удалить клиента и его историю?"))return;db.clients=db.clients.filter(c=>c.id!==cid);db.workouts=db.workouts.filter(w=>w.clientId!==cid);save();closeModal();render()}
+function addExercise(){
+ openModal(`<h2>Новое упражнение</h2><label>Название</label><input id="en" placeholder="Например: Выпады"><label>Мышечная группа</label><input id="em" placeholder="Ноги / ягодицы / спина..."><label>Ссылка на видео</label><input id="ev" type="url" placeholder="https://instagram.com/..."><button class="primary" onclick="saveExercise()">Сохранить в библиотеку</button><button class="secondary" onclick="closeModal()">Отмена</button>`);
+}
+function saveExercise(){
+ const name=document.getElementById("en").value.trim();if(!name)return toast("Укажи название");
+ db.exercises.push({id:id(),name,muscle:document.getElementById("em").value.trim(),video:document.getElementById("ev").value.trim()});save();closeModal();render();toast("Упражнение сохранено");
+}
+function editExercise(eid){
+ const e=db.exercises.find(x=>x.id===eid);
+ openModal(`<h2>Изменить упражнение</h2><label>Название</label><input id="en" value="${esc(e.name)}"><label>Мышечная группа</label><input id="em" value="${esc(e.muscle)}"><label>Ссылка на видео</label><input id="ev" value="${esc(e.video)}"><button class="primary" onclick="updateExercise('${eid}')">Сохранить</button><button class="secondary danger" onclick="removeExercise('${eid}')">Удалить</button>`);
+}
+function updateExercise(eid){let e=db.exercises.find(x=>x.id===eid);e.name=document.getElementById("en").value.trim();e.muscle=document.getElementById("em").value.trim();e.video=document.getElementById("ev").value.trim();save();closeModal();render();toast("Изменения сохранены")}
+function removeExercise(eid){db.exercises=db.exercises.filter(e=>e.id!==eid);save();closeModal();render();toast("Упражнение удалено")}
+function assignWorkout(cid){
+ if(!db.exercises.length)return toast("Сначала добавь упражнения");
+ openModal(`<h2>Новая тренировка</h2><label>Название</label><input id="wn" placeholder="Ноги + ягодицы"><label>Дата</label><input id="wd" type="date" value="${new Date().toISOString().slice(0,10)}"><label>Упражнения</label><div id="checks">${db.exercises.map(e=>`<label class="check"><input type="checkbox" value="${e.id}"> ${esc(e.name)}</label>`).join("")}</div><label>Заметка</label><textarea id="wnote" placeholder="Комментарий тренера"></textarea><button class="primary" onclick="saveWorkout('${cid}')">Назначить клиенту</button>`);
+}
+function saveWorkout(cid){
+ const title=document.getElementById("wn").value.trim()||"Тренировка";
+ const ex=[...document.querySelectorAll("#checks input:checked")].map(x=>x.value);
+ db.workouts.push({id:id(),clientId:cid,title,date:document.getElementById("wd").value,exerciseIds:ex,notes:document.getElementById("wnote").value.trim(),done:false});
+ save();closeModal();render();toast("Тренировка назначена");
+}
+function calendar(){
+ const now=new Date(), y=now.getFullYear(), m=now.getMonth(), first=new Date(y,m,1), days=new Date(y,m+1,0).getDate(), offset=(first.getDay()+6)%7;
+ let cells=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].map(x=>`<div class="muted" style="font-size:11px;font-weight:800;text-align:center">${x}</div>`).join("");
+ for(let i=0;i<offset;i++)cells+="<div></div>";
+ for(let d=1;d<=days;d++){let ds=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`, ws=db.workouts.filter(w=>w.date===ds);cells+=`<div class="day ${d===now.getDate()?"today":""}"><b>${d}</b>${ws.slice(0,2).map(w=>`<span class="dot">${esc((db.clients.find(c=>c.id===w.clientId)||{}).name||"Клиент")}</span>`).join("")}</div>`}
+ return `<section class="panel"><div class="kicker">РАСПИСАНИЕ</div><h2>${now.toLocaleString("ru-RU",{month:"long",year:"numeric"})}</h2><div class="calendar">${cells}</div></section><section class="panel"><h2>Ближайшие тренировки</h2>${db.workouts.filter(w=>w.date>=new Date().toISOString().slice(0,10)).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,10).map(w=>`<div class="item"><div class="row"><b>${esc(w.title)}</b><span class="tag">${esc(w.date)}</span></div><div class="muted">${esc((db.clients.find(c=>c.id===w.clientId)||{}).name||"Клиент")}</div></div>`).join("")||`<div class="empty">Запланированных тренировок нет.</div>`}</section>`;
+}
+function trainer(){
+ return `<section class="panel"><div class="kicker">НАСТРОЙКИ ТРЕНЕРА</div><h2>Мой профиль</h2><label>Имя тренера</label><input id="tn" value="${esc(db.trainer.name)}"><label>Instagram тренера</label><input id="ti" type="url" placeholder="https://instagram.com/..." value="${esc(db.trainer.instagram||"https://www.instagram.com/fitness_batumi?stkn=MXRhdnlqamltcWd4OQ==")}"><button class="primary" onclick="saveTrainer()">Сохранить</button></section>
+ <section class="panel"><div class="kicker">ОБЛАКО · SUPABASE</div><h2>Облачный кабинет</h2><p class="muted">Данные клиентов, упражнений, программ и тренировок сохраняются в Supabase и синхронизируются между устройствами.</p><div class="item"><b>Проект</b><div class="muted">dnbpqlnqmyvnukhwcdhv.supabase.co</div></div><label>Supabase anon / publishable key</label><input id="sbkey" type="password" placeholder="Вставь anon key из Supabase → Settings → API" value="${esc(localStorage.getItem("fit-calendar-supabase-key")||"")}"><button class="primary" onclick="connectSupabase()">☁️ Подключить и синхронизировать</button><button class="secondary" onclick="cloudSyncNow()">↻ Синхронизировать сейчас</button><p class="muted" style="font-size:12px;margin-top:10px">Используй только anon/publishable key. Не вставляй service_role key.</p></section>
+ <section class="panel"><div class="kicker">РЕЗЕРВНАЯ КОПИЯ</div><button class="secondary" onclick="exportData()">⬇ Экспортировать данные</button><button class="secondary" onclick="importData()">⬆ Импортировать данные</button><button class="secondary danger" onclick="resetData()">Сбросить демо-данные</button></section>`;
+}
+async function connectSupabase(){
+ const key=(document.getElementById("sbkey")?.value||"").trim();
+ if(!key)return toast("Вставь anon/publishable key");
+ localStorage.setItem("fit-calendar-supabase-key",key);
+ window.SUPABASE_ANON_KEY=key;
+ cloud=null;cloudReady=false;
+ render();
+ if(!initCloud())return;
+ const ok=await loadCloud();
+ render();
+ toast(ok?"Облако подключено":"Не удалось подключить облако");
+}
+async function cloudSyncNow(){
+ if(!initCloud()){go("trainer");return}
+ const ok=await loadCloud();render();toast(ok?"Синхронизация выполнена":"Не удалось подключиться");
+}
+function saveTrainer(){db.trainer.name=document.getElementById("tn").value.trim()||"Мой тренер";db.trainer.instagram=document.getElementById("ti").value.trim();save();render();toast("Профиль сохранён")}
+function exportData(){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:"application/json"}));a.download="fit-calendar-backup.json";a.click()}
+function importData(){const i=document.createElement("input");i.type="file";i.accept=".json";i.onchange=()=>{const r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save();render();toast("Данные импортированы")}catch{toast("Неверный файл")}};r.readAsText(i.files[0])};i.click()}
+async function resetData(){if(!confirm("Удалить все данные приложения?"))return;db=JSON.parse(JSON.stringify(seed));save();await saveCloud();render();toast("Данные сброшены")}
+render();
+(async()=>{
+ if(initCloud()){
+  await loadCloud();
+  render();
+ }
+})();
+</script>
+</body>
+</html>
