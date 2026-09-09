@@ -229,7 +229,7 @@ async function connectSupabase(){
  const key=(document.getElementById("sbkey")?.value||"").trim();
  if(!key)return toast("Вставь anon/publishable key");
  localStorage.setItem("fit-calendar-supabase-key",key);
- window.SUPABASE_ANON_KEY=key;
+ windSUPABASE_ANON_KEY=key;
  cloud=null;cloudReady=false;
  render();
  if(!initCloud())return;
