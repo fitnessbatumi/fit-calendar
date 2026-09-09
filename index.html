@@ -18,9 +18,9 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.app{ma
 input,select,textarea{width:100%;padding:13px 14px;border:1px solid #e2d7e8;border-radius:14px;background:#fff;outline:none;color:var(--ink);margin:5px 0 10px}textarea{min-height:85px;resize:vertical}label{font-size:12px;font-weight:850;color:#665e6d}.check{display:flex;gap:8px;align-items:center;margin:7px 0}.check input{width:auto;margin:0}
 .modal{position:fixed;inset:0;background:#23182d7a;display:none;align-items:flex-end;justify-content:center;z-index:20}.modal.open{display:flex}.sheet{width:min(820px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:27px 27px 0 0;padding:22px 17px 30px}.sheet h2{margin-top:0}
 .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day{min-height:70px;cursor:pointer;border:1px solid var(--line);border-radius:11px;padding:6px;background:#fff}.day.today{outline:2px solid #9d58ef}.dot{display:block;margin-top:7px;font-size:9px;color:#fff;background:#9b55ed;border-radius:6px;padding:3px;overflow:hidden;white-space:nowrap}
-.months{display:grid;grid-template-columns:1fr 1fr;gap:12px}.month-card{border:1px solid var(--line);border-radius:19px;padding:12px;background:#fff}.month-title{font-size:17px;font-weight:950;margin:2px 0 10px;text-transform:capitalize}.month-card .day{min-height:64px;padding:5px}.month-card .dot{font-size:8px;padding:2px;margin-top:4px}.schedule-dot{display:block;margin-top:4px;font-size:8px;color:#7b3fa0;font-weight:900;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.client-calendar .day{cursor:default}.day.has-workout{background:#faf4ff;border-color:#d9c2ec}.day.done-day{background:#eefaf4;border-color:#bde6d0}
+.months{display:grid;grid-template-columns:1fr 1fr;gap:12px}.month-card{border:1px solid var(--line);border-radius:19px;padding:12px;background:#fff}.month-title{font-size:17px;font-weight:950;margin:2px 0 10px;text-transform:capitalize}.month-card .day{min-height:64px;padding:5px}.month-card .dot{font-size:8px;padding:2px;margin-top:4px}.schedule-dot{display:block;margin-top:4px;font-size:8px;color:#7b3fa0;font-weight:900;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.calendar-picker{display:flex;align-items:end;gap:10px;margin:12px 0 14px}.calendar-picker label{font-size:12px;font-weight:900;color:#7d7485}.calendar-picker select{min-width:180px;width:auto;margin:0}.schedule-done{color:#198754;background:#eaf8ef;border-radius:6px;padding:2px 4px}.client-calendar .day{cursor:default}.day.has-workout{background:#faf4ff;border-color:#d9c2ec}.day.done-day{background:#eefaf4;border-color:#bde6d0}
 @media(max-width:540px){.months{grid-template-columns:1fr}.month-card .day{min-height:58px}}
-.set-row{display:grid;grid-template-columns:42px 62px minmax(0,1fr) minmax(0,1fr) 48px;gap:7px;align-items:center;margin:7px 0;padding:5px 6px;border-radius:14px;background:#f8f5fb}.set-row input{margin:0;padding:10px}.set-num{display:flex;align-items:center;justify-content:center;min-height:42px;border-radius:12px;background:#f1e6f8;color:#87439d;font-size:16px;font-weight:950}.set-label{font-size:10px;font-weight:900;color:#8a8394;text-align:center;line-height:1.05}.set-done{display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}.set-done .set-check{width:30px;height:30px;margin:0!important;justify-self:center;accent-color:#8b5cf6}.set-done span{display:none}.set-check{width:30px;height:30px;margin:0!important;justify-self:center;accent-color:#8b5cf6}.done{background:#eefaf4;border-color:#bde6d0}.progress{height:8px;background:#eee8f3;border-radius:99px;overflow:hidden;margin:8px 0}.progress i{display:block;height:100%;background:linear-gradient(90deg,#e834a1,#8d4ff1)}
+.set-row{display:grid;grid-template-columns:42px 52px minmax(0,1fr) minmax(0,1fr) 48px;gap:7px;align-items:center;margin:7px 0;padding:5px 6px;border-radius:14px;background:#f8f5fb}.set-row input{margin:0;padding:10px}.set-num{display:flex;align-items:center;justify-content:center;min-height:42px;border-radius:12px;background:#f1e6f8;color:#87439d;font-size:16px;font-weight:950}.set-label{font-size:10px;font-weight:900;color:#8a8394;text-align:center;line-height:1.05}.set-done{display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}.set-done .set-check{width:32px;height:32px;margin:0!important;justify-self:center;accent-color:#18a957}.set-done span{display:none}.set-check{width:30px;height:30px;margin:0!important;justify-self:center;accent-color:#8b5cf6}.done{background:#eefaf4;border-color:#bde6d0}.progress{height:8px;background:#eee8f3;border-radius:99px;overflow:hidden;margin:8px 0}.progress i{display:block;height:100%;background:linear-gradient(90deg,#e834a1,#8d4ff1)}
 .client-hero{background:linear-gradient(135deg,#f8eafa,#eee8ff);border-radius:20px;padding:16px}.linkbox{background:#f8f4ff;border:1px dashed #bca9d6;border-radius:15px;padding:12px;font-size:12px;word-break:break-all}
 .empty{text-align:center;padding:24px;color:var(--muted)}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#272333;color:#fff;padding:11px 16px;border-radius:14px;display:none;z-index:50}.toast.show{display:block}
 @media(max-width:540px){.hero h1{font-size:33px}.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.set-row{grid-template-columns:42px 1fr 1fr 48px}.app{padding-left:10px;padding-right:10px}}
@@ -124,17 +124,39 @@ function monthCalendar(y,m,opts={}){
  for(let d=1;d<=days;d++){
   const ds=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`,ws=(opts.workouts||db.workouts).filter(w=>w.date===ds);
   const has=ws.length>0,allDone=has&&ws.every(w=>w.done),cls=`day ${ds===today?"today ":""}${has?"has-workout ":""}${allDone?"done-day":""}`;
-  const dots=ws.slice(0,2).map(w=>opts.client?`<span class="schedule-dot">${w.done?"✓ ":""}${esc(w.title)}</span>`:`<span class="dot">${esc((db.clients.find(c=>c.id===w.clientId)||{}).name||"Клиент")}</span>`).join("");
-  cells+=opts.client?`<div class="${cls}"><b>${d}</b>${dots}</div>`:`<div class="${cls}" onclick="openDay('${ds}')"><b>${d}</b>${dots}</div>`;
+  const dots=ws.slice(0,3).map(w=>opts.client
+    ? `<span class="schedule-dot ${w.done?"schedule-done":""}">${w.done?"✓ ":""}${esc(w.title)}</span>`
+    : `<span class="dot">${esc((db.clients.find(c=>c.id===w.clientId)||{}).name||"Клиент")}</span>`).join("");
+  cells+=opts.client
+    ? `<div class="${cls}"><b>${d}</b>${dots}</div>`
+    : `<div class="${cls}" onclick="openDay('${ds}')"><b>${d}</b>${dots}</div>`;
  }
  return `<div class="month-card"><div class="month-title">${new Date(y,m,1).toLocaleString("ru-RU",{month:"long",year:"numeric"})}</div><div class="calendar">${cells}</div></div>`;
 }
-function calendarMonths(workouts=db.workouts){
- const now=new Date(),months=[];for(let m=now.getMonth();m<=11;m++)months.push(monthCalendar(now.getFullYear(),m,{workouts}));
- return months.join("");
+function monthOptions(){
+ const now=new Date(),out=[];
+ for(let m=now.getMonth();m<=11;m++){
+  const value=`${now.getFullYear()}-${m}`;
+  out.push(`<option value="${value}">${new Date(now.getFullYear(),m,1).toLocaleString("ru-RU",{month:"long",year:"numeric"})}</option>`);
+ }
+ return out.join("");
+}
+function selectedMonth(){
+ const now=new Date();
+ if(!window.calendarMonth || window.calendarMonth<now.getMonth() || window.calendarMonth>11) window.calendarMonth=now.getMonth();
+ return window.calendarMonth;
+}
+function calendarPicker(workouts=db.workouts,client=false){
+ const y=new Date().getFullYear(),m=selectedMonth();
+ return `<div class="calendar-picker"><label style="margin:0">Месяц</label><select onchange="changeCalendarMonth(this.value,${client?'true':'false'})">${monthOptions()}</select></div><div class="months">${monthCalendar(y,m,{workouts,client})}</div>`;
+}
+function changeCalendarMonth(value,client){
+ const parts=String(value).split("-");
+ window.calendarMonth=Number(parts[1]);
+ client?renderClient():render();
 }
 function calendar(){
- return `<section class="panel"><div class="kicker">РАСПИСАНИЕ</div><h2>Календарь тренировок</h2><p class="muted">Здесь видны все запланированные тренировки. Можно сразу видеть расписание с текущего месяца до конца года. Нажми на день, чтобы открыть тренировку.</p><div class="months">${calendarMonths()}</div></section>
+ return `<section class="panel"><div class="kicker">РАСПИСАНИЕ</div><h2>Календарь тренировок</h2><p class="muted">Выбери месяц — сентябрь, октябрь, ноябрь или декабрь. В каждом дне видно назначенную тренировку.</p>${calendarPicker(db.workouts,false)}</section>
  <section class="panel"><h2>Ближайшие тренировки</h2>${db.workouts.filter(w=>w.date>=new Date().toISOString().slice(0,10)).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,10).map(w=>`<div class="item" onclick="editWorkout('${w.id}')" style="cursor:pointer"><div class="row"><b>${esc(w.title)}</b><span class="tag">${w.done?"✅ Выполнено":esc(w.date)}</span></div><div class="muted">${esc((db.clients.find(c=>c.id===w.clientId)||{}).name||"Клиент")}</div><div class="muted" style="font-size:12px">Нажми, чтобы изменить</div></div>`).join("")||`<div class="empty">Нет запланированных тренировок.</div>`}</section>`;
 }
 function openDay(ds){
@@ -184,7 +206,7 @@ function normalizeWorkouts(){
 function renderClient(){
  const c=clientSession,ws=db.workouts.filter(w=>w.clientId===c.id).sort((a,b)=>a.date.localeCompare(b.date)),today=new Date().toISOString().slice(0,10),active=ws.find(w=>!w.done&&w.date>=today)||ws.find(w=>!w.done)||ws[0];
  document.getElementById("root").innerHTML=`<main class="app"><section class="hero"><div class="eyebrow">CLIENT MODE</div><h1>${esc(c.name)}</h1><p>${esc(c.goal||"Твой план тренировок")}</p><div class="stats"><div class="stat"><b>${ws.length}</b><span>ТРЕНИРОВОК</span></div><div class="stat"><b>${ws.filter(w=>w.done).length}</b><span>ВЫПОЛНЕНО</span></div><div class="stat"><b>${ws.length?Math.round(ws.filter(w=>w.done).length/ws.length*100):0}%</b><span>ПРОГРЕСС</span></div></div></section>
- <section class="panel client-calendar"><div class="kicker">МОЙ ГРАФИК</div><h2>Календарь тренировок</h2><p class="muted">Твои тренировки по дням. Зелёный день — тренировка выполнена.</p><div class="months">${calendarMonths(ws)}</div></section>
+ <section class="panel client-calendar"><div class="kicker">МОЙ ГРАФИК</div><h2>Календарь тренировок</h2><p class="muted">Выбери месяц. В дни тренировок видно название твоей тренировки, а выполненные дни отмечены зелёным.</p>${calendarPicker(ws,true)}</section>
  <section class="panel">${active?clientWorkoutCard(active):`<div class="empty">Тренировок пока нет. Тренер скоро назначит план.</div>`}</section>
  <section class="panel"><div class="kicker">МОИ ТРЕНИРОВКИ</div><h2>История</h2>${ws.map(w=>clientMini(w)).join("")||`<div class="empty">История пока пустая.</div>`}</section>
  </main>`
