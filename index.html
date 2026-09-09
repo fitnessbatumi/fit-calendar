@@ -29,7 +29,9 @@ input,select,textarea{width:100%;padding:13px 14px;border:1px solid #e2d7e8;bord
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL="https://dnbpqlnqmyvnukhwcdhv.supabase.co";
-let SUPABASE_ANON_KEY=localStorage.getItem("fit-calendar-supabase-key")||"";
+const QUERY=new URLSearchParams(location.search);
+let SUPABASE_ANON_KEY=localStorage.getItem("fit-calendar-supabase-key")||QUERY.get("sbkey")||"";
+if(QUERY.get("sbkey")) localStorage.setItem("fit-calendar-supabase-key",QUERY.get("sbkey"));
 const DATA_TABLE="fit_calendar_data",KEY="fit-calendar-premium-10";
 const seed={mode:"trainer",selectedClient:null,trainer:{name:"Мой тренер",instagram:""},clients:[],exercises:[
 {id:"e1",name:"Присед со штангой",muscle:"Ноги",video:""},{id:"e2",name:"Ягодичный мост",muscle:"Ягодицы",video:""},
@@ -69,7 +71,8 @@ function clients(){return `<section class="panel"><div class="row"><div><div cla
 function addClient(){openModal(`<h2>Новый клиент</h2><label>Имя</label><input id="cn" placeholder="Имя клиента"><label>Цель</label><input id="cg" placeholder="Сила, ягодицы, снижение веса..."><button class="primary" onclick="saveClient()">Создать клиента</button><button class="secondary" onclick="closeModal()">Отмена</button>`)}
 function saveClient(){const name=document.getElementById("cn").value.trim();if(!name)return toast("Укажи имя");const code=Math.random().toString(36).slice(2,8).toUpperCase();db.clients.push({id:id(),name,goal:document.getElementById("cg").value.trim(),code,created:new Date().toISOString()});save();closeModal();render();toast("Клиент создан")}
 function deleteClient(cid){if(!confirm("Удалить клиента и его историю?"))return;db.clients=db.clients.filter(c=>c.id!==cid);db.workouts=db.workouts.filter(w=>w.clientId!==cid);save();closeModal();render()}
-function clientLink(c){return location.origin+location.pathname+"?client="+encodeURIComponent(c.id)+"&code="+encodeURIComponent(c.code||"")}
+function ensureClientCode(c){if(!c.code){c.code=Math.random().toString(36).slice(2,8).toUpperCase();save()}return c.code}
+function clientLink(c){const code=ensureClientCode(c);const key=SUPABASE_ANON_KEY||localStorage.getItem("fit-calendar-supabase-key")||"";return location.origin+location.pathname+"?client="+encodeURIComponent(c.id)+"&code="+encodeURIComponent(code)+(key?"&sbkey="+encodeURIComponent(key):"")}
 function viewClient(cid){openModal(clientDetail(db.clients.find(c=>c.id===cid)))}
 function clientDetail(c){const ws=db.workouts.filter(w=>w.clientId===c.id),done=ws.filter(w=>w.done).length;return `<div class="row"><h2>${esc(c.name)}</h2><button class="small" onclick="closeModal()">✕</button></div>
 <div class="client-hero"><b>Цель:</b> ${esc(c.goal||"—")}<div class="muted">Прогресс: ${ws.length?Math.round(done/ws.length*100):0}% · ${done}/${ws.length} тренировок</div></div>
@@ -183,10 +186,11 @@ function toggleSet(wid,ei,si,done){const w=findWorkout(wid);if(!w?.exercises?.[e
 function setActual(wid,ei,si,key,val){const w=findWorkout(wid);if(!w?.exercises?.[ei]?.setsData?.[si])return;w.exercises[ei].setsData[si][key]=Number(val)||0;save()}
 function finishWorkout(wid){const w=findWorkout(wid);if(!w)return;const p=workoutProgress(w);if(p<100){if(!confirm("Не все подходы отмечены. Завершить тренировку всё равно?"))return}w.done=true;w.completedAt=new Date().toISOString();save();renderClient();toast("Тренировка завершена 💪")}
 function clientLogout(){clientSession=null;history.replaceState({},document.title,location.pathname);render()}
+function normalizeClients(){let changed=false;db.clients.forEach(c=>{if(!c.code){c.code=Math.random().toString(36).slice(2,8).toUpperCase();changed=true}});if(changed)save();return changed}
 function detectClient(){const q=new URLSearchParams(location.search),cid=q.get("client"),code=q.get("code");if(!cid||!code)return false;const c=db.clients.find(x=>x.id===cid&&x.code===code);if(c){clientSession=c;return true}return false}
 
-normalizeWorkouts();localSave();window.tab="home";render();
-(async()=>{if(initCloud()){await loadCloud();if(!detectClient())render();else renderClient()}else{detectClient();render()}})();
+normalizeWorkouts();normalizeClients();localSave();window.tab="home";render();
+(async()=>{if(initCloud()){await loadCloud();normalizeClients();if(!detectClient())render();else renderClient()}else{detectClient();render()}})();
 </script>
 </body>
 </html>
