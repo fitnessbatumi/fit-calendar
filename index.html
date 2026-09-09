@@ -20,10 +20,10 @@ input,select,textarea{width:100%;padding:13px 14px;border:1px solid #e2d7e8;bord
 .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day{min-height:70px;cursor:pointer;border:1px solid var(--line);border-radius:11px;padding:6px;background:#fff}.day.today{outline:2px solid #9d58ef}.dot{display:block;margin-top:7px;font-size:9px;color:#fff;background:#9b55ed;border-radius:6px;padding:3px;overflow:hidden;white-space:nowrap}
 .months{display:grid;grid-template-columns:1fr 1fr;gap:12px}.month-card{border:1px solid var(--line);border-radius:19px;padding:12px;background:#fff}.month-title{font-size:17px;font-weight:950;margin:2px 0 10px;text-transform:capitalize}.month-card .day{min-height:64px;padding:5px}.month-card .dot{font-size:8px;padding:2px;margin-top:4px}.schedule-dot{display:block;margin-top:4px;font-size:8px;color:#7b3fa0;font-weight:900;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.calendar-picker{display:flex;align-items:end;gap:10px;margin:12px 0 14px}.calendar-picker label{font-size:12px;font-weight:900;color:#7d7485}.calendar-picker select{min-width:180px;width:auto;margin:0}.schedule-done{color:#198754;background:#eaf8ef;border-radius:6px;padding:2px 4px}.client-calendar .day{cursor:default}.day.has-workout{background:#faf4ff;border-color:#d9c2ec}.day.done-day{background:#eefaf4;border-color:#bde6d0}
 @media(max-width:540px){.months{grid-template-columns:1fr}.month-card .day{min-height:58px}}
-.set-row{display:grid;grid-template-columns:42px 52px minmax(0,1fr) minmax(0,1fr) 48px;gap:7px;align-items:center;margin:7px 0;padding:5px 6px;border-radius:14px;background:#f8f5fb}.set-row input{margin:0;padding:10px}.set-num{display:flex;align-items:center;justify-content:center;min-height:42px;border-radius:12px;background:#f1e6f8;color:#87439d;font-size:16px;font-weight:950}.set-label{font-size:10px;font-weight:900;color:#8a8394;text-align:center;line-height:1.05}.set-done{display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}.set-done .set-check{width:32px;height:32px;margin:0!important;justify-self:center;accent-color:#18a957}.set-done span{display:none}.set-check{width:30px;height:30px;margin:0!important;justify-self:center;accent-color:#8b5cf6}.done{background:#eefaf4;border-color:#bde6d0}.progress{height:8px;background:#eee8f3;border-radius:99px;overflow:hidden;margin:8px 0}.progress i{display:block;height:100%;background:linear-gradient(90deg,#e834a1,#8d4ff1)}
+.set-row{display:grid;grid-template-columns:46px minmax(0,1fr) 50px;gap:8px;align-items:center;margin:7px 0;padding:6px;border-radius:14px;background:#f8f5fb}.set-row input{margin:0;padding:10px}.set-values{display:grid;grid-template-columns:1fr 1fr;gap:7px}.set-head{display:grid;grid-template-columns:46px 1fr 50px;gap:8px;margin:10px 6px 4px;font-size:9px;color:#8a8394;font-weight:900}.set-head span:nth-child(2){text-align:center}.set-head span:last-child{text-align:center}.timer-btn{width:100%;padding:11px;border-radius:13px;background:#f0eaff;color:#7144a0;font-weight:900;margin:8px 0;border:1px solid #dfd0f0}.rest-timer{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:60;display:none;align-items:center;gap:12px;background:#272333;color:#fff;padding:10px 12px 10px 16px;border-radius:18px;box-shadow:0 12px 35px rgba(0,0,0,.22)}.rest-timer b{font-size:22px;letter-spacing:1px}.rest-timer button{padding:8px 11px;border-radius:10px;background:#fff;color:#272333;font-weight:900}.set-num{display:flex;align-items:center;justify-content:center;min-height:42px;border-radius:12px;background:#f1e6f8;color:#87439d;font-size:16px;font-weight:950}.set-done{display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}.set-done .set-check{width:32px;height:32px;margin:0!important;justify-self:center;accent-color:#18a957}.set-done span{display:none}.set-check{width:30px;height:30px;margin:0!important;justify-self:center;accent-color:#8b5cf6}.done{background:#eefaf4;border-color:#bde6d0}.progress{height:8px;background:#eee8f3;border-radius:99px;overflow:hidden;margin:8px 0}.progress i{display:block;height:100%;background:linear-gradient(90deg,#e834a1,#8d4ff1)}
 .client-hero{background:linear-gradient(135deg,#f8eafa,#eee8ff);border-radius:20px;padding:16px}.linkbox{background:#f8f4ff;border:1px dashed #bca9d6;border-radius:15px;padding:12px;font-size:12px;word-break:break-all}
 .empty{text-align:center;padding:24px;color:var(--muted)}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#272333;color:#fff;padding:11px 16px;border-radius:14px;display:none;z-index:50}.toast.show{display:block}
-@media(max-width:540px){.hero h1{font-size:33px}.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.set-row{grid-template-columns:42px 1fr 1fr 48px}.app{padding-left:10px;padding-right:10px}}
+@media(max-width:540px){.hero h1{font-size:33px}.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.set-row{grid-template-columns:42px minmax(0,1fr) 46px}.set-head{grid-template-columns:42px minmax(0,1fr) 46px}.app{padding-left:10px;padding-right:10px}}
 </style>
 </head>
 <body>
@@ -214,7 +214,46 @@ function renderClient(){
 function clientMini(w){const p=workoutProgress(w);return `<div class="item"><div class="row"><b>${esc(w.title)}</b><span class="tag">${p}% выполнено</span></div><div class="muted">${esc(w.date)}</div></div>`}
 function clientWorkoutCard(w){const p=workoutProgress(w);return `<div class="kicker">ТРЕНИРОВКА</div><h2>${esc(w.title)}</h2><div class="muted">${esc(w.date)}</div><div class="progress"><i style="width:${p}%"></i></div><div class="muted"><b>${p}% выполнено</b> · отмечено ${p}% подходов</div>${(w.exercises||[]).map((x,i)=>clientExercise(w,x,i)).join("")}<button class="primary" onclick="finishWorkout('${w.id}')">✅ Завершить тренировку</button>`}
 function workoutProgress(w){const all=(w.exercises||[]).reduce((n,e)=>n+(Number(e.sets)||((e.setsData||[]).length)),0),done=(w.exercises||[]).reduce((n,e)=>n+(e.setsData||[]).filter(s=>s.done).length,0);return all?Math.min(100,Math.round(done/all*100)):0}
-function clientExercise(w,x,ei){const e=db.exercises.find(a=>a.id===x.exerciseId)||{};return `<div class="exercise-box"><div class="row"><b>${esc(e.name||"Упражнение")}</b>${e.muscle?`<span class="tag">${esc(e.muscle)}</span>`:""}</div><div class="muted">План: ${x.sets||0} × ${x.reps||0}${x.weight?" · "+x.weight+" кг":""}${x.rest?" · отдых "+x.rest+" сек":""}</div>${(x.video||e.video)?`<div style="margin:9px 0"><a class="video-btn" href="${esc(x.video||e.video)}" target="_blank" rel="noopener">▶️ Смотреть видео на YouTube</a></div>`:""}${(x.setsData||[]).map((s,si)=>`<div class="set-row ${s.done?"done":""}"><span class="set-num">${si+1}</span><div class="set-label">ПОДХОД</div><input type="number" min="0" value="${s.reps??x.reps??0}" onchange="setActual('${w.id}',${ei},${si},'reps',this.value)" placeholder="Повторы"><input type="number" min="0" step=".5" value="${s.weight??x.weight??0}" onchange="setActual('${w.id}',${ei},${si},'weight',this.value)" placeholder="Вес кг"><label class="set-done"><input class="set-check" type="checkbox" ${s.done?"checked":""} onchange="toggleSet('${w.id}',${ei},${si},this.checked)"><span>✓</span></label></div>`).join("")}${x.note?`<div class="muted">📝 ${esc(x.note)}</div>`:""}</div>`}
+let restTimerInterval=null,restTimerEnd=0;
+function clientExercise(w,x,ei){
+ const e=db.exercises.find(a=>a.id===x.exerciseId)||{}, video=x.video||e.video||"";
+ return `<div class="exercise-box">
+   <div class="row"><b>${esc(e.name||"Упражнение")}</b>${e.muscle?`<span class="tag">${esc(e.muscle)}</span>`:""}</div>
+   <div class="muted">План: ${x.sets||0} × ${x.reps||0}${x.weight?" · "+x.weight+" кг":""}</div>
+   ${video?`<div style="margin:9px 0"><a class="video-btn" href="${esc(video)}" target="_blank" rel="noopener">▶️ Смотреть видео на YouTube</a></div>`:""}
+   ${x.rest?`<button class="timer-btn" onclick="startRestTimer(${Number(x.rest)||0})">⏱ Таймер отдыха · ${Number(x.rest)||0} сек</button>`:""}
+   <div class="set-head"><span>ПОДХОД</span><span>ПОВТОРЫ / ВЕС</span><span>ГОТОВО</span></div>
+   ${(x.setsData||[]).map((set,si)=>`<div class="set-row ${set.done?"done":""}">
+     <span class="set-num">${si+1}</span>
+     <div class="set-values">
+       <input type="number" min="0" value="${set.reps??x.reps??0}" onchange="setActual('${w.id}',${ei},${si},'reps',this.value)" placeholder="Повт.">
+       <input type="number" min="0" step=".5" value="${set.weight??x.weight??0}" onchange="setActual('${w.id}',${ei},${si},'weight',this.value)" placeholder="Кг">
+     </div>
+     <label class="set-done"><input class="set-check" type="checkbox" ${set.done?"checked":""} onchange="toggleSet('${w.id}',${ei},${si},this.checked)"><span>✓</span></label>
+   </div>`).join("")}
+   ${x.note?`<div class="muted">📝 ${esc(x.note)}</div>`:""}
+ </div>`
+}
+function startRestTimer(seconds){
+ seconds=Math.max(1,Number(seconds)||60);
+ clearInterval(restTimerInterval);
+ restTimerEnd=Date.now()+seconds*1000;
+ showTimer(seconds);
+ restTimerInterval=setInterval(()=>{
+   const left=Math.max(0,Math.ceil((restTimerEnd-Date.now())/1000));
+   showTimer(left);
+   if(left<=0){clearInterval(restTimerInterval);restTimerInterval=null;navigator.vibrate?.([180,100,180]);toast("⏱ Отдых закончен — следующий подход")}
+ },250);
+}
+function showTimer(seconds){
+ let box=document.getElementById("restTimer");
+ if(!box){box=document.createElement("div");box.id="restTimer";box.className="rest-timer";document.body.appendChild(box)}
+ const m=Math.floor(seconds/60),sec=seconds%60;
+ box.innerHTML=`<b>⏱ ${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}</b><button onclick="stopRestTimer()">Стоп</button>`;
+ box.style.display="flex";
+}
+function stopRestTimer(){clearInterval(restTimerInterval);restTimerInterval=null;const b=document.getElementById("restTimer");if(b)b.style.display="none"}
+
 function findWorkout(wid){return db.workouts.find(w=>w.id===wid)}
 function toggleSet(wid,ei,si,done){const w=findWorkout(wid);if(!w?.exercises?.[ei]?.setsData?.[si])return;w.exercises[ei].setsData[si].done=done;w.done=workoutProgress(w)>=100;save();renderClient()}
 function setActual(wid,ei,si,key,val){const w=findWorkout(wid);if(!w?.exercises?.[ei]?.setsData?.[si])return;w.exercises[ei].setsData[si][key]=Number(val)||0;save()}
